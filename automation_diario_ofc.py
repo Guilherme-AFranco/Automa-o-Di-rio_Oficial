@@ -87,57 +87,74 @@ for i, noticia in enumerate(noticias):
 driver.quit() # Sai da pagina da web
     
 
-results = gemini_analysis(titulo_dou,texto_dou) # Faz a analise a partir de IA na função vista pelo código Gemini.py
+# results = gemini_analysis(titulo_dou,texto_dou) # Faz a analise a partir de IA na função vista pelo código Gemini.py
 
-for key, value in results.items(): # Loop para pegar todas as noticias do dicionario
-    print(f"Título: {value['title']}") # Imprime o título
-    if "response" in value: # Pega apenas a resposta gerada pela IA para printar
-        print(f"Resposta: {value['response']}") # Imprime a resposta
-        with open("noticias.txt", "w") as arquivo:
-            arquivo.write(f"Título {value['title']}.\n{value['response']}\n\n\n")
-    
-    
-    else:
-        print(f"Erro: {value['error']}") # Se der erra, ficaremos tristes
+# for key, value in results.items(): # Loop para pegar todas as notícias do dicionário
+#     print(f"Título: {value['title']}") # Imprime o título
+#     if "response" in value: # Pega apenas a resposta gerada pela IA para printar
+#         print(f"Resposta: {value['response']}") # Imprime a resposta
+#         with open("noticias.txt", "a") as arquivo:
+#             arquivo.write(f"Título {value['title']}.{value['response']}\n\n\n")
+#     else:
+#         print(f"Erro: {value['error']}") # Se der erro, ficaremos tristes
+
+
+# Abrir o arquivo "html_draft_start.txt" e ler o conteúdo
+with open("html_draft_start.txt", "r") as draftStart_file:
+    html_draft_start = draftStart_file.read()
+
+# Escrever o conteúdo do "html_draft_start.txt" no início do "noticias.txt"
+with open("noticias.txt", "w") as noticias_file:
+    noticias_file.write(html_draft_start)
 
 titulo = []
 body = []
-open("noticias.txt", "w").close()
-
 
 for i in range(0, int(len(titulo_dou))):
     titulo.append(f"Titulo: {titulo_dou[f'Noticia {i}']}.")
     body.append(f"{texto_dou[f'Noticia {i}']}.")
-    with open("noticias.txt","a") as arquivo:
-        arquivo.write(f"<p>{str(titulo[i])}<\p>\n")
-        arquivo.write(f"<p>{str(body[i])}<\p>\n\n")
-        arquivo.write("<p><\p>")
-        
+    with open("noticias.txt","a", encoding="utf-8") as arquivo:
+        arquivo.write('\t\t\t<tr>\n')
+        arquivo.write('\t\t\t\t<td style=\"width: auto; vertical-align: top;\">\n')
+        arquivo.write('\t\t\t\t\t<h4 style=\"display: inline;\">\n')
+        arquivo.write('\t\t\t\t\t\t<a href=\"Url 1\">\n')
+        arquivo.write('\t\t\t\t\t\t\t<span style=\"color: #ed7d31; font-family: \'Arial Black\'; font-size: 11pt;\">Seção 3 |</span>\n')
+        arquivo.write(f'\t\t\t\t\t\t\t<span style=\"color: #002060; font-family: \'Arial Black\'; font-size: 11pt;\">{str(titulo[i])}</span></a>\n')
+        arquivo.write('\t\t\t\t\t</h4>\n')
+        arquivo.write('\t\t\t\t</td>\n')
+        arquivo.write('\t\t\t</tr>\n')
+        arquivo.write('\t\t\t<tr>\n')
+        arquivo.write('\t\t\t\t<td style=\"vertical-align: top;\">\n')
+        arquivo.write('\t\t\t\t\t<p class=\"date\">Data única</p>\n')
+        arquivo.write(f'\t\t\t\t\t<p class=\"description\">{str(body[i])}</p>\n')
+        arquivo.write('\t\t\t</tr>\n\n')
+
+with open("html_draft_end.txt", "r") as draftEnd_file:
+    html_draft_end = draftEnd_file.read()
+
+# Escrever o conteúdo do "html_draft_end.txt" no final do "noticias.txt"
+with open("noticias.txt", "a") as noticias_file:
+    noticias_file.write(html_draft_end)
 
 
-# outlook = win32.Dispatch('Outlook.Application') # cria integração com o outlook
-# email = outlook.CreateItem(0) # Cria e-mail
-
-# # Configurações do e-mail
 
 
-# with open("noticias.txt","r") as file:
-#    file_content = file.read()
+outlook = win32.Dispatch('Outlook.Application') # cria integração com o outlook
+email = outlook.CreateItem(0) # Cria e-mail
 
-# file_content.replace("\n", "<br>")
-
-# email.To = "guilherme.franco@embraer.com.br;"
-# email.Subject = "Resumo Diário Oficial"
+# Configurações do e-mail
 
 
-# email.HTMLBody = f"""
-#     <p> Bom dia! Segue o resumo do dirário oficial </p>
-#     <p></p>
-#     <p> {(file_content)} </p>
-#     <p></p>
-#     <p> Best regards| Atenciosamente, </p>
-#     <p> Guilherme Franco & Leo Ferreira </p>   
-# """   
-# email.Send() 
+with open("noticias.txt","r") as file:
+   file_content = file.read()
 
-# driver.quit()
+file_content.replace("\n", "<br>")
+
+email.To = "guilherme.franco@embraer.com.br;"
+email.Subject = "Resumo Diário Oficial"
+
+
+email.HTMLBody = file_content
+email.Send() 
+
+driver.quit()
