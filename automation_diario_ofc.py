@@ -6,10 +6,13 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
 import time
-import pyautogui 
+import win32com.client as win32
 from Gemini import *
+from email.mime.text import MIMEText
+from datetime import datetime
 
-service = Service(executable_path="E:\Backup_PC\Aplicativos\ChromeDrive\WebDriver\chromedriver.exe")
+# service = Service(executable_path="chromedriver.exe") # Descomentar para uso no pc do Léo
+service = Service(executable_path="E:\Backup_PC\Aplicativos\ChromeDrive\WebDriver\chromedriver.exe") # Descomentar para uso no pc do Gui
 driver = webdriver.Chrome(service=service)
 driver.maximize_window()
 
@@ -35,7 +38,7 @@ secao3.click()
 
 time.sleep(2)
 
-dia = driver.find_element(By.ID, "mes") # Voltar para "dia" dps (tinha poucas noticias com parametro "dia")
+dia = driver.find_element(By.ID, "dia") # Voltar para "dia" dps (tinha poucas noticias com parametro "dia")
 dia.click()
 
 WebDriverWait(driver, 2).until(
@@ -45,7 +48,7 @@ WebDriverWait(driver, 2).until(
 
 search_area = driver.find_element(By.CLASS_NAME, "form-control")
 search_area.clear()
-search_area.send_keys("aircraft" + Keys.ENTER)
+search_area.send_keys("aeronave" + Keys.ENTER)
 time.sleep(10)
 
 
@@ -82,6 +85,7 @@ for i, noticia in enumerate(noticias):
         print(f"Erro ao processar a notícia {i+1}: {e}") # Se der erro, ele avisa e ficamos tristes
 
 driver.quit() # Sai da pagina da web
+    
 
 results = gemini_analysis(titulo_dou,texto_dou) # Faz a analise a partir de IA na função vista pelo código Gemini.py
 
@@ -89,5 +93,51 @@ for key, value in results.items(): # Loop para pegar todas as noticias do dicion
     print(f"Título: {value['title']}") # Imprime o título
     if "response" in value: # Pega apenas a resposta gerada pela IA para printar
         print(f"Resposta: {value['response']}") # Imprime a resposta
+        with open("noticias.txt", "w") as arquivo:
+            arquivo.write(f"Título {value['title']}.\n{value['response']}\n\n\n")
+    
+    
     else:
         print(f"Erro: {value['error']}") # Se der erra, ficaremos tristes
+
+titulo = []
+body = []
+open("noticias.txt", "w").close()
+
+
+for i in range(0, int(len(titulo_dou))):
+    titulo.append(f"Titulo: {titulo_dou[f'Noticia {i}']}.")
+    body.append(f"{texto_dou[f'Noticia {i}']}.")
+    with open("noticias.txt","a") as arquivo:
+        arquivo.write(f"<p>{str(titulo[i])}<\p>\n")
+        arquivo.write(f"<p>{str(body[i])}<\p>\n\n")
+        arquivo.write("<p><\p>")
+        
+
+
+# outlook = win32.Dispatch('Outlook.Application') # cria integração com o outlook
+# email = outlook.CreateItem(0) # Cria e-mail
+
+# # Configurações do e-mail
+
+
+# with open("noticias.txt","r") as file:
+#    file_content = file.read()
+
+# file_content.replace("\n", "<br>")
+
+# email.To = "guilherme.franco@embraer.com.br;"
+# email.Subject = "Resumo Diário Oficial"
+
+
+# email.HTMLBody = f"""
+#     <p> Bom dia! Segue o resumo do dirário oficial </p>
+#     <p></p>
+#     <p> {(file_content)} </p>
+#     <p></p>
+#     <p> Best regards| Atenciosamente, </p>
+#     <p> Guilherme Franco & Leo Ferreira </p>   
+# """   
+# email.Send() 
+
+# driver.quit()
