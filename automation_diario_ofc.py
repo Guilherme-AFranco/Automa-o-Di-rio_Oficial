@@ -157,7 +157,7 @@ with open("noticias.txt","r") as file:
 
 file_content.replace("\n", "<br>")
 
-email.To = "guilherme.franco@embraer.com.br;"
+email.To = "leonardo.fsantos@embraer.com.br; guilherme.franco@embraer.com.br;"
 email.Subject = "Resumo Diário Oficial"
 
 
