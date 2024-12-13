@@ -110,7 +110,7 @@ with open("noticias.txt", "w") as noticias_file:
 titulo = []
 body = []
 date = datetime.now().date()
-formated_date = date.strftime("%B %d, %Y")
+formatted_date = date.strftime("%B %d, %Y")
 
 for i in range(0, int(len(titulo_dou))):
     titulo.append(f"Titulo: {titulo_dou[f'Noticia {i}']}.")
@@ -128,7 +128,7 @@ for i in range(0, int(len(titulo_dou))):
             </tr>
             <tr>
                 <td style="vertical-align: top;">
-                    <p class="date">{str(formated_date)}</p>
+                    <p class="date">{str(formatted_date)}</p>
                     <p class="description">{str(body[i])}</p>
                 </td>
             </tr>
