@@ -109,25 +109,32 @@ with open("noticias.txt", "w") as noticias_file:
 
 titulo = []
 body = []
+date = datetime.now().date()
+formated_date = date.strftime("%B %d, %Y")
 
 for i in range(0, int(len(titulo_dou))):
     titulo.append(f"Titulo: {titulo_dou[f'Noticia {i}']}.")
     body.append(f"{texto_dou[f'Noticia {i}']}.")
+    html_template = f"""
+            <tr>
+                <td style="width: auto; vertical-align: top;">
+                    <h4 style="display: inline;">
+                        <a href="Url 1">
+                            <span style="color: #ed7d31; font-family: 'Arial Black'; font-size: 11pt;">Seção 3 |</span>
+                            <span style="color: #002060; font-family: 'Arial Black'; font-size: 11pt;">{str(titulo[i])}</span>
+                        </a>
+                    </h4>
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">
+                    <p class="date">{str(formated_date)}</p>
+                    <p class="description">{str(body[i])}</p>
+                </td>
+            </tr>
+    """
     with open("noticias.txt","a", encoding="utf-8") as arquivo:
-        arquivo.write('\t\t\t<tr>\n')
-        arquivo.write('\t\t\t\t<td style=\"width: auto; vertical-align: top;\">\n')
-        arquivo.write('\t\t\t\t\t<h4 style=\"display: inline;\">\n')
-        arquivo.write('\t\t\t\t\t\t<a href=\"Url 1\">\n')
-        arquivo.write('\t\t\t\t\t\t\t<span style=\"color: #ed7d31; font-family: \'Arial Black\'; font-size: 11pt;\">Seção 3 |</span>\n')
-        arquivo.write(f'\t\t\t\t\t\t\t<span style=\"color: #002060; font-family: \'Arial Black\'; font-size: 11pt;\">{str(titulo[i])}</span></a>\n')
-        arquivo.write('\t\t\t\t\t</h4>\n')
-        arquivo.write('\t\t\t\t</td>\n')
-        arquivo.write('\t\t\t</tr>\n')
-        arquivo.write('\t\t\t<tr>\n')
-        arquivo.write('\t\t\t\t<td style=\"vertical-align: top;\">\n')
-        arquivo.write('\t\t\t\t\t<p class=\"date\">Data única</p>\n')
-        arquivo.write(f'\t\t\t\t\t<p class=\"description\">{str(body[i])}</p>\n')
-        arquivo.write('\t\t\t</tr>\n\n')
+        arquivo.write(html_template)
 
 with open("html_draft_end.txt", "r") as draftEnd_file:
     html_draft_end = draftEnd_file.read()
