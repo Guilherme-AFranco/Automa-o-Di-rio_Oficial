@@ -30,6 +30,14 @@ advance_search.click()
 
 time.sleep (1)
 WebDriverWait(driver, 12).until(
+    EC.presence_of_all_elements_located((By.ID, "do2"))
+)
+
+secao2 = driver.find_element(By.ID, "do2")
+secao2.click()
+
+time.sleep (1)
+WebDriverWait(driver, 12).until(
     EC.presence_of_all_elements_located((By.ID, "do3"))
 )
 
@@ -56,7 +64,10 @@ time.sleep(10)
 noticias = driver.find_elements(By.CLASS_NAME, "resultados-wrapper") # Obtem as classes de noticias existentes na aba
 noticia_url = {}
 titulo_dou = {} # Dicionario para colocar o titulo da notícia
-texto_dou = {} # Dicionario para o Gemini trabalhar
+texto_dou = {} # Dicionario para texto da noticia
+secao_dou ={} # Dicionario para numero da seção
+data_dou = {}# Dicionario para data de publicação
+
 for i, noticia in enumerate(noticias):
     try:
         link_element = noticia.find_element(By.TAG_NAME, "a") # Encontrar link
@@ -71,11 +82,8 @@ for i, noticia in enumerate(noticias):
 
         titulo_dou[f'Noticia {i}'] = driver.find_element(By.CLASS_NAME, "identifica").text # Coletar titulo
         texto_dou[f'Noticia {i}'] = driver.find_element(By.CLASS_NAME, "texto-dou").text # Coletar notícia
-
-        print(f'\nTítulo da Notícia {i+1}:')
-        print(titulo_dou[f'Noticia {i}'])
-        print(f'Texto da Notícia {i+1}:')
-        print(texto_dou[f'Noticia {i}'])
+        data_dou[f'Noticia {i}'] = driver.find_element(By.CLASS_NAME, "publicado-dou-data").text # Coletar data
+        secao_dou[f'Noticia {i}'] = driver.find_element(By.CLASS_NAME, "secao-dou").text # Coletar secao
 
         driver.close() # Fechar a aba adicional
         driver.switch_to.window(driver.window_handles[0])  # Voltar à aba principal
@@ -109,32 +117,66 @@ with open("noticias.txt", "w") as noticias_file:
 
 titulo = []
 body = []
-date = datetime.now().date()
-formatted_date = date.strftime("%B %d, %Y")
+url = []
+section = []
+pub_date = []
+current_date = datetime.now().date()
+formatted_date = current_date.strftime("%B %d, %Y")
+html_template2 = []
+html_template3 = []
 
 for i in range(0, int(len(titulo_dou))):
-    titulo.append(f"Titulo: {titulo_dou[f'Noticia {i}']}.")
-    body.append(f"{texto_dou[f'Noticia {i}']}.")
-    html_template = f"""
-            <tr>
-                <td style="width: auto; vertical-align: top;">
-                    <h4 style="display: inline;">
-                        <a href="Url 1">
-                            <span style="color: #ed7d31; font-family: 'Arial Black'; font-size: 11pt;">Seção 3 |</span>
-                            <span style="color: #002060; font-family: 'Arial Black'; font-size: 11pt;">{str(titulo[i])}</span>
-                        </a>
-                    </h4>
-                </td>
-            </tr>
-            <tr>
-                <td style="vertical-align: top;">
-                    <p class="date">{str(formatted_date)}</p>
-                    <p class="description">{str(body[i])}</p>
-                </td>
-            </tr>
-    """
+    titulo.append(f"{titulo_dou[f'Noticia {i}']}.")
+    body.append(f"{texto_dou[f'Noticia {i}']}")
+    url.append(f"{noticia_url[f'Noticia {i}']}")
+    section.append(f"{secao_dou[f'Noticia {i}']}")
+    pub_date.append(f"{data_dou[f'Noticia {i}']}")
+    if section[i][:8] == 'Seção: 2':
+        html_template2.append(f"""
+                <tr>
+                    <td style="width: auto; vertical-align: top;">
+                        <h4 style="display: inline;">
+                            <a href="{str(url[i])}">
+                                <span style="color: #ed7d31; font-family: 'Arial Black'; font-size: 11pt;">{str(section[i][:8])}|</span>
+                                <span style="color: #002060; font-family: 'Arial Black'; font-size: 11pt;">{str(titulo[i])}</span>
+                            </a>
+                        </h4>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;">
+                        <p class="date">{str(pub_date[i])}</p>
+                        <p class="description">{str(body[i])}</p>
+                    </td>
+                </tr>
+        """)
+    else:
+        html_template3.append(f"""
+                <tr>
+                    <td style="width: auto; vertical-align: top;">
+                        <h4 style="display: inline;">
+                            <a href="{str(url[i])}">
+                                <span style="color: #ed7d31; font-family: 'Arial Black'; font-size: 11pt;">{str(section[i][:8])}|</span>
+                                <span style="color: #002060; font-family: 'Arial Black'; font-size: 11pt;">{str(titulo[i])}</span>
+                            </a>
+                        </h4>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;">
+                        <p class="date">{str(pub_date[i])}</p>
+                        <p class="description">{str(body[i])}</p>
+                    </td>
+                </tr>
+        """)
+
+for i in range(0, int(len(html_template2))):
     with open("noticias.txt","a", encoding="utf-8") as arquivo:
-        arquivo.write(html_template)
+        arquivo.write(html_template2[i]) # Escrever seção 2
+
+for i in range(0, int(len(html_template3))):
+    with open("noticias.txt","a", encoding="utf-8") as arquivo:
+        arquivo.write(html_template3[i]) # Escrever seção 3
 
 with open("html_draft_end.txt", "r") as draftEnd_file:
     html_draft_end = draftEnd_file.read()
@@ -144,21 +186,19 @@ with open("noticias.txt", "a") as noticias_file:
     noticias_file.write(html_draft_end)
 
 
-
-
 outlook = win32.Dispatch('Outlook.Application') # cria integração com o outlook
 email = outlook.CreateItem(0) # Cria e-mail
 
 # Configurações do e-mail
 
 
-with open("noticias.txt","r") as file:
+with open("noticias.txt","r", encoding="utf-8") as file:
    file_content = file.read()
 
 file_content.replace("\n", "<br>")
 
 email.To = "leonardo.fsantos@embraer.com.br; guilherme.franco@embraer.com.br;"
-email.Subject = "Resumo Diário Oficial"
+email.Subject = f"Resumo Diário Oficial - {formatted_date}"
 
 
 email.HTMLBody = file_content
