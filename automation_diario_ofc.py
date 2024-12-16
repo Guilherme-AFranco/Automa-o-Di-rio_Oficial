@@ -39,7 +39,7 @@ with open("html_draft_start.txt", "r") as draftStart_file:
 with open("html_draft_end.txt", "r") as draftEnd_file:
     html_draft_end = draftEnd_file.read()
 
-for value in news:
+for idx, value in enumerate(news):
     # Escrever o conteúdo do "html_draft_start.txt" no início do "noticias_XX.txt"
     with open(f"noticias-{value}.txt", "w") as noticias_file:
         noticias_file.write(html_draft_start)
@@ -100,7 +100,7 @@ for value in news:
         file_content.replace("\n", "<br>")
 
         email.To = "leonardo.fsantos@embraer.com.br; guilherme.franco@embraer.com.br;"
-        email.Subject = f"Resumo Diário Oficial - {formatted_date}"
+        email.Subject = f"{secao} - Resumo Diário Oficial - {formatted_date}"
 
 
         email.HTMLBody = file_content
