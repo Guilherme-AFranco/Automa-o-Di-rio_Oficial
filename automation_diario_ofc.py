@@ -100,7 +100,7 @@ for idx, value in enumerate(news):
         file_content.replace("\n", "<br>")
 
         email.To = "leonardo.fsantos@embraer.com.br; guilherme.franco@embraer.com.br;"
-        email.Subject = f"{secao} - Resumo Diário Oficial - {formatted_date}"
+        email.Subject = f"{str(section_part[i][:8])} - Resumo Diário Oficial - {formatted_date}"
 
 
         email.HTMLBody = file_content
