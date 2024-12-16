@@ -27,7 +27,7 @@ data = {}
 section = {}
 
 for i in range(len(secao)):
-    news[f'{secao[i]} - {search[i]}'], title[f'{secao[i]} - {search[i]}'], text[f'{secao[i]} - {search[i]}'], data[f'{secao[i]} - {search[i]}'], section[f'{secao[i]} - {search[i]}'] = scrapping(secao[i],search[i])
+    news[f'{secao[i]} - {search[i]}'], title[f'{secao[i]} - {search[i]}'], text[f'{secao[i]} - {search[i]}'], section[f'{secao[i]} - {search[i]}'], data[f'{secao[i]} - {search[i]}'] = scrapping(secao[i],search[i])
 
 
 ## Inserção dos dados em arquivos .txt separados ##
