@@ -114,4 +114,4 @@ for idx, value in enumerate(news):
         except:
             print("Erro ao gerar o email")
     else:
-        print(f'Não há noticias para os termos procurados hoje em {section[value][f'Noticia {i}']}')
+        print(f'Não há noticias para os termos procurados hoje em {value}')
