@@ -4,6 +4,7 @@ html_teste.html
 teste.ipynb
 teste copy.ipynb
 automation_diario_ofc_v2.py
+chromedriver.exe
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

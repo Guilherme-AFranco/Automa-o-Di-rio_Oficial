@@ -25,7 +25,7 @@
 </head>
 
 <body>
-    <p> Bom dia! Segue o resumo do dirário oficial </p>
+    <p> Bom dia! Segue o resumo do diário oficial. </p>
     <p></p>
     <table style="align-items: center; width: 95%; border-collapse:collapse; border-color: #7f7f7f; display:block;" border="1">
         <tbody>

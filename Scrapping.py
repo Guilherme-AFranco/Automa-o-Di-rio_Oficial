@@ -6,9 +6,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
 import time
 
+# from Gemini import *
+
+
 def scrapping(secao,search):
-    # service = Service(executable_path="chromedriver.exe") # Descomentar para uso no pc do Léo
-    service = Service(executable_path="E:\Backup_PC\Aplicativos\ChromeDrive\WebDriver\chromedriver.exe") # Descomentar para uso no pc do Gui
+    service = Service(executable_path="chromedriver.exe") # Descomentar para uso no pc do Léo
+    # service = Service(executable_path="E:\Backup_PC\Aplicativos\ChromeDrive\WebDriver\chromedriver.exe") # Descomentar para uso no pc do Gui
     driver = webdriver.Chrome(service=service)
     driver.maximize_window()
 
@@ -73,6 +76,8 @@ def scrapping(secao,search):
             data_dou[f'Noticia {i}'] = driver.find_element(By.CLASS_NAME, "publicado-dou-data").text # Coletar data
             secao_dou[f'Noticia {i}'] = driver.find_element(By.CLASS_NAME, "secao-dou").text # Coletar secao
 
+            texto_dou[f'Noticia {i}'] = texto_dou[f'Noticia {i}'].replace('\n', '<br>')
+            
             driver.close() # Fechar a aba adicional
             driver.switch_to.window(driver.window_handles[0])  # Voltar à aba principal
 
@@ -82,4 +87,27 @@ def scrapping(secao,search):
 
     driver.quit() # Sai da pagina da web
 
-    return noticia_url, titulo_dou, texto_dou, secao_dou, data_dou
+
+    # # Coleta de noticias pela IA Gemini ##
+    # results = gemini_analysis(titulo_dou,texto_dou) # Faz a analise a partir de IA na função vista pelo código Gemini.py
+    # texto_IA = {}
+
+    # for i, value in results.items(): # Loop para pegar todas as notícias do dicionário
+    #     if "response" in value: # Pega apenas a resposta gerada pela IA para printar
+    #         print(f"Resposta: {value['response']}") # Imprime a resposta
+    #         texto_IA[f'Noticia {i}'] = value['response']
+    #     else:
+    #         print(f"Erro: {value['error']}") # Se der erro, ficaremos tristes
+    #         texto_IA[f'Noticia {i}'] = 'Erro: Contate o administrador do programa.'
+
+    # for key, value in results.items(): # Loop para pegar todas as notícias do dicionário
+    #     print(f"Título: {value['title']}") # Imprime o título
+    #     if "response" in value: # Pega apenas a resposta gerada pela IA para printar
+    #         print(f"Resposta: {value['response']}") # Imprime a resposta
+    #         with open("noticias.txt", "a") as arquivo:
+    #             arquivo.write(f"Título {value['title']}.{value['response']}\n\n\n")
+    #     else:
+    #         print(f"Erro: {value['error']}") # Se der erro, ficaremos tristes
+
+
+    return noticia_url, titulo_dou, texto_dou, secao_dou, data_dou #, texto_IA

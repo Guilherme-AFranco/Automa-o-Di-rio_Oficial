@@ -1,20 +1,6 @@
 import win32com.client as win32
 from datetime import datetime
-from Gemini import *
 from Scrapping import *
-
-## Coleta de noticias pela IA Gemini ##
-# results = gemini_analysis(titulo_dou,texto_dou) # Faz a analise a partir de IA na função vista pelo código Gemini.py
-
-# for key, value in results.items(): # Loop para pegar todas as notícias do dicionário
-#     print(f"Título: {value['title']}") # Imprime o título
-#     if "response" in value: # Pega apenas a resposta gerada pela IA para printar
-#         print(f"Resposta: {value['response']}") # Imprime a resposta
-#         with open("noticias.txt", "a") as arquivo:
-#             arquivo.write(f"Título {value['title']}.{value['response']}\n\n\n")
-#     else:
-#         print(f"Erro: {value['error']}") # Se der erro, ficaremos tristes
-
 
 ## Coleta das informações da web ##
 secao = ["do2", "do3"] # Seções a analisar
@@ -28,6 +14,19 @@ section = {}
 
 for i in range(len(secao)):
     news[f'{secao[i]} - {search[i]}'], title[f'{secao[i]} - {search[i]}'], text[f'{secao[i]} - {search[i]}'], section[f'{secao[i]} - {search[i]}'], data[f'{secao[i]} - {search[i]}'] = scrapping(secao[i],search[i])
+
+
+## Coleta de noticias pela IA Gemini ##
+# results = gemini_analysis(titulo_dou,texto_dou) # Faz a analise a partir de IA na função vista pelo código Gemini.py
+
+# for key, value in results.items(): # Loop para pegar todas as notícias do dicionário
+#     print(f"Título: {value['title']}") # Imprime o título
+#     if "response" in value: # Pega apenas a resposta gerada pela IA para printar
+#         print(f"Resposta: {value['response']}") # Imprime a resposta
+#         with open("noticias.txt", "a") as arquivo:
+#             arquivo.write(f"Título {value['title']}.{value['response']}\n\n\n")
+#     else:
+#         print(f"Erro: {value['error']}") # Se der erro, ficaremos tristes
 
 
 ## Inserção dos dados em arquivos .txt separados ##
@@ -99,11 +98,14 @@ for idx, value in enumerate(news):
 
         file_content.replace("\n", "<br>")
 
-        email.To = "leonardo.fsantos@embraer.com.br; guilherme.franco@embraer.com.br;"
+        email.BCC = "stefano.martins@embraer.com.br; guilherme.franco@embraer.com.br; leonardo.fsantos@embraer.com.br"
         email.Subject = f"{str(section_part[i][:8])} - Resumo Diário Oficial - {formatted_date}"
 
-
         email.HTMLBody = file_content
+
+        # Especifica a conta de envio
+        email.SendUsingAccount = outlook.Session.Accounts.Item("guilherme.franco@embraer.com.br")
+        email.SentOnBehalfOfName = "defensemarketstrategy@embraer.com.br"
         email.Send()
     except:
         print("Erro ao gerar o email")
