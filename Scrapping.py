@@ -9,7 +9,7 @@ import time
 # from Gemini import *
 
 
-def scrapping(secao,search):
+def scrapping(secao,search,orgPrinc,orgSub):
     service = Service(executable_path="chromedriver.exe") # Descomentar para uso no pc do Léo
     # service = Service(executable_path="E:\Backup_PC\Aplicativos\ChromeDrive\WebDriver\chromedriver.exe") # Descomentar para uso no pc do Gui
     driver = webdriver.Chrome(service=service)
@@ -48,7 +48,42 @@ def scrapping(secao,search):
     search_area = driver.find_element(By.CLASS_NAME, "form-control")
     search_area.clear()
     search_area.send_keys(search + Keys.ENTER)
-    time.sleep(10)
+    time.sleep(5)
+
+    if orgPrinc != "":
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "orgPrinAction"))
+        )
+
+        org_prin = driver.find_element(By.ID, "orgPrinAction")
+        org_prin.click()
+
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "dropdown-item"))
+        )
+
+        org_principal = driver.find_element(By.XPATH, f"//a[contains(text(), '{orgPrinc}')]")
+        org_principal.click()
+
+        time.sleep(2)
+
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "orgSubAction"))
+        )
+
+        org_Sub = driver.find_element(By.ID, "orgSubAction")
+        org_Sub.click()
+
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "dropdown-item"))
+        )
+
+        try:
+            org_Subordinada = driver.find_element(By.XPATH, f"//a[contains(text(), '{orgSub}')]")
+            org_Subordinada.click()
+        except:
+            driver.quit()
+            return {}, {}, {}, {}, {}
 
 
     ## Obtendo as noticias ##

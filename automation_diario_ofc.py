@@ -5,6 +5,8 @@ from Scrapping import *
 ## Coleta das informações da web ##
 secao = ["do2", "do3"] # Seções a analisar
 search = ["", "aeronave"] # # Pesquisas a analisar com base nas seções
+orgPrinc = ["Ministério da Defesa", ""]
+orgSub = ["Comando da Aeronáutica", ""]
 
 news = {}
 title = {}
@@ -13,7 +15,7 @@ data = {}
 section = {}
 
 for i in range(len(secao)):
-    news[f'{secao[i]} - {search[i]}'], title[f'{secao[i]} - {search[i]}'], text[f'{secao[i]} - {search[i]}'], section[f'{secao[i]} - {search[i]}'], data[f'{secao[i]} - {search[i]}'] = scrapping(secao[i],search[i])
+    news[f'{secao[i]} - {search[i]}'], title[f'{secao[i]} - {search[i]}'], text[f'{secao[i]} - {search[i]}'], section[f'{secao[i]} - {search[i]}'], data[f'{secao[i]} - {search[i]}'] = scrapping(secao[i],search[i], orgPrinc[i], orgSub[i])
 
 
 ## Coleta de noticias pela IA Gemini ##
@@ -39,73 +41,77 @@ with open("html_draft_end.txt", "r") as draftEnd_file:
     html_draft_end = draftEnd_file.read()
 
 for idx, value in enumerate(news):
-    # Escrever o conteúdo do "html_draft_start.txt" no início do "noticias_XX.txt"
-    with open(f"noticias-{value}.txt", "w") as noticias_file:
-        noticias_file.write(html_draft_start)
+    if news[value] != {}:
+        # Escrever o conteúdo do "html_draft_start.txt" no início do "noticias_XX.txt"
+        with open(f"noticias-{value}.txt", "w") as noticias_file:
+            noticias_file.write(html_draft_start)
 
-    titulo_part = []
-    body_part = []
-    url_part = []
-    section_part = []
-    pub_date_part = []
-    current_date = datetime.now().date()
-    formatted_date = current_date.strftime("%B %d, %Y")
-    html_template = []
+        titulo_part = []
+        body_part = []
+        url_part = []
+        section_part = []
+        pub_date_part = []
+        current_date = datetime.now().date()
+        formatted_date = current_date.strftime("%B %d, %Y")
+        html_template = []
 
-    # Criando cada noticia em uma string html_template
-    for i in range(0, int(len(title[value]))):
-        titulo_part.append(f"{title[value][f'Noticia {i}']}.")
-        body_part.append(f"{text[value][f'Noticia {i}']}")
-        url_part.append(f"{news[value][f'Noticia {i}']}")
-        section_part.append(f"{section[value][f'Noticia {i}']}")
-        pub_date_part.append(f"{data[value][f'Noticia {i}']}")
-        html_template.append(f"""
-                <tr>
-                    <td style="width: auto; vertical-align: top;">
-                        <h4 style="display: inline;">
-                            <a href="{str(url_part[i])}">
-                                <span style="color: #ed7d31; font-family: 'Arial Black'; font-size: 11pt;">{str(section_part[i][:8])}|</span>
-                                <span style="color: #002060; font-family: 'Arial Black'; font-size: 11pt;">{str(titulo_part[i])}</span>
-                            </a>
-                        </h4>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="vertical-align: top;">
-                        <p class="date">{str(pub_date_part[i])}</p>
-                        <p class="description">{str(body_part[i])}</p>
-                    </td>
-                </tr>
-        """)
-    
-    # Escrever todas as notícia no arquivo "noticias_XX.txt"
-    for i in range(0, int(len(html_template))):
-        with open(f"noticias-{value}.txt","a", encoding="utf-8") as arquivo:
-            arquivo.write(html_template[i])
+        # Criando cada noticia em uma string html_template
+        for i in range(0, int(len(title[value]))):
+            titulo_part.append(f"{title[value][f'Noticia {i}']}.")
+            body_part.append(f"{text[value][f'Noticia {i}']}")
+            url_part.append(f"{news[value][f'Noticia {i}']}")
+            section_part.append(f"{section[value][f'Noticia {i}']}")
+            pub_date_part.append(f"{data[value][f'Noticia {i}']}")
+            html_template.append(f"""
+                    <tr>
+                        <td style="width: auto; vertical-align: top;">
+                            <h4 style="display: inline;">
+                                <a href="{str(url_part[i])}">
+                                    <span style="color: #ed7d31; font-family: 'Arial Black'; font-size: 11pt;">{str(section_part[i][:8])}|</span>
+                                    <span style="color: #002060; font-family: 'Arial Black'; font-size: 11pt;">{str(titulo_part[i])}</span>
+                                </a>
+                            </h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;">
+                            <p class="date">{str(pub_date_part[i])}</p>
+                            <p class="description">{str(body_part[i])}</p>
+                        </td>
+                    </tr>
+            """)
+        
+        # Escrever todas as notícia no arquivo "noticias_XX.txt"
+        for i in range(0, int(len(html_template))):
+            with open(f"noticias-{value}.txt","a", encoding="utf-8") as arquivo:
+                arquivo.write(html_template[i])
 
-    # Escrever o conteúdo do "html_draft_end.txt" no final do "noticias.txt"
-    with open(f"noticias-{value}.txt", "a") as noticias_file:
-        noticias_file.write(html_draft_end)
+        # Escrever o conteúdo do "html_draft_end.txt" no final do "noticias.txt"
+        with open(f"noticias-{value}.txt", "a") as noticias_file:
+            noticias_file.write(html_draft_end)
 
-    try:
-        ## Gerando o email ##
-        outlook = win32.Dispatch('Outlook.Application') # cria integração com o outlook
-        email = outlook.CreateItem(0) # Cria e-mail
+        try:
+            ## Gerando o email ##
+            outlook = win32.Dispatch('Outlook.Application') # cria integração com o outlook
+            email = outlook.CreateItem(0) # Cria e-mail
 
-        # Configurações do e-mail
-        with open(f"noticias-{value}.txt","r", encoding="utf-8") as file:
-            file_content = file.read()
+            # Configurações do e-mail
+            with open(f"noticias-{value}.txt","r", encoding="utf-8") as file:
+                file_content = file.read()
 
-        file_content.replace("\n", "<br>")
+            file_content.replace("\n", "<br>")
 
-        email.BCC = "stefano.martins@embraer.com.br; guilherme.franco@embraer.com.br; leonardo.fsantos@embraer.com.br"
-        email.Subject = f"{str(section_part[i][:8])} - Resumo Diário Oficial - {formatted_date}"
+            # email.BCC = "stefano.martins@embraer.com.br; guilherme.franco@embraer.com.br; leonardo.fsantos@embraer.com.br"
+            email.BCC = "guilherme.franco@embraer.com.br;"
+            email.Subject = f"{str(section_part[i][:8])} - Resumo Diário Oficial - {formatted_date}"
 
-        email.HTMLBody = file_content
+            email.HTMLBody = file_content
 
-        # Especifica a conta de envio
-        email.SendUsingAccount = outlook.Session.Accounts.Item("guilherme.franco@embraer.com.br")
-        email.SentOnBehalfOfName = "defensemarketstrategy@embraer.com.br"
-        email.Send()
-    except:
-        print("Erro ao gerar o email")
+            # Especifica a conta de envio
+            email.SendUsingAccount = outlook.Session.Accounts.Item("guilherme.franco@embraer.com.br")
+            email.SentOnBehalfOfName = "defensemarketstrategy@embraer.com.br"
+            email.Send()
+        except:
+            print("Erro ao gerar o email")
+    else:
+        print(f'Não há noticias para os termos procurados hoje em {section[value][f'Noticia {i}']}')

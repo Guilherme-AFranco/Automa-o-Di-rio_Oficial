@@ -4,7 +4,7 @@
 
     <p></p>
     <p> Best regards| Atenciosamente, </p>
-    <p> Guilherme Franco & Leo Ferreira </p>
+    <p> Defense Market Strategy </p>
 
     <img src="https://embraerbrandcenter.com/wp-content/uploads/2023/11/Frame-2778.jpg" alt="" width="144" height="40"
         style="float: right; margin-right: 10pt;" /></td> </a>
